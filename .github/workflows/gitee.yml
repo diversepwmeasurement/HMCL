@@ -1,21 +1,21 @@
-name: Sync to Gitee
-
-on:
-  push
-
 jobs:
   run:
     if: ${{ github.repository_owner == 'HMCL-dev' }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: Mirror GitHub to Gitee
-        uses: Yikun/hub-mirror-action@v1.4
-        with:
-          src: github/HMCL-dev
-          dst: gitee/huanghongxun
-          static_list: 'HMCL'
-          force_update: true
-          debug: true
-          dst_key: ${{ secrets.GITEE_SYNC_BOT_PRIVATE_KEY }}
-          dst_token: ${{ secrets.GITEE_SYNC_BOT_TOKEN }}
-          cache_path: /github/workspace/hub-mirror-cache
+    - continue-on-error: true
+      name: Mirror GitHub to Gitee
+      uses: Yikun/hub-mirror-action@v1.4
+      with:
+        cache_path: /github/workspace/hub-mirror-cache
+        debug: true
+        dst: gitee/huanghongxun
+        dst_key: ${{ secrets.GITEE_SYNC_BOT_PRIVATE_KEY }}
+        dst_token: ${{ secrets.GITEE_SYNC_BOT_TOKEN }}
+        force_update: true
+        src: github/HMCL-dev
+        static_list: HMCL
+name: Sync to Gitee
+on:
+  repository_dispatch:
+    types: trigger-ga___gitee.yml

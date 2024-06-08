@@ -1,35 +1,33 @@
-name: Java CI
-
-on:
-  push:
-  pull_request:
-    paths-ignore:
-      - '**.md'
-      - 'HMCLauncher/**'
-
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: self-hosted
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 11
+    - continue-on-error: true
+      uses: actions/checkout@v4
+    - continue-on-error: true
+      name: Set up JDK 11
       uses: actions/setup-java@v4
       with:
-        distribution: 'zulu'
+        distribution: zulu
+        java-package: jdk+fx
         java-version: '11'
-        java-package: 'jdk+fx'
-    - name: Build with Gradle
-      run: ./gradlew build --no-daemon
+    - continue-on-error: true
       env:
+        CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
         MICROSOFT_AUTH_ID: ${{ secrets.MICROSOFT_AUTH_ID }}
         MICROSOFT_AUTH_SECRET: ${{ secrets.MICROSOFT_AUTH_SECRET }}
-        CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
-    - name: Get short SHA
+      name: Build with Gradle
+      run: ./gradlew build --no-daemon
+    - continue-on-error: true
+      name: Get short SHA
       run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
-    - name: Upload Artifacts
+    - continue-on-error: true
+      name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: HMCL-${{ env.SHORT_SHA }}
         path: HMCL/build/libs
+name: Java CI
+on:
+  repository_dispatch:
+    types: trigger-ga___gradle.yml
